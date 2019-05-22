@@ -7,6 +7,6 @@ import { firebaseProviders } from './firebase.provider'
   imports: [ConfigModule],
   controllers: [],
   providers: [...firebaseProviders],
-  exports: [],
+  exports: [...firebaseProviders],
 })
 export class FirebaseModule {}
