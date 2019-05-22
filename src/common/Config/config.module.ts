@@ -1,13 +1,9 @@
-import { Module, Global } from '@nestjs/common'
+import { Module } from '@nestjs/common'
 import { ConfigService } from './config.service'
+import { configProviders } from './config.provider'
 
 @Module({
-  providers: [
-    {
-      provide: ConfigService,
-      useValue: new ConfigService(`./secrets.env`),
-    },
-  ],
-  exports: [ConfigService],
+  providers: [ConfigService, ...configProviders],
+  exports: [...configProviders],
 })
 export class ConfigModule {}
