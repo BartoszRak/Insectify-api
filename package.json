@@ -21,9 +21,12 @@
   },
   "dependencies": {
     "@nestjs/common": "^6.0.0",
-    "@nestjs/core": "^6.0.0",
+    "@nestjs/core": "^6.2.4",
     "@nestjs/platform-express": "^6.0.0",
     "@types/dotenv": "^6.1.1",
+    "bcryptjs": "^2.4.3",
+    "class-transformer": "^0.2.3",
+    "class-validator": "^0.9.1",
     "dotenv": "^8.0.0",
     "firebase-admin": "^7.4.0",
     "fs": "^0.0.1-security",
