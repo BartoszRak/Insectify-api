@@ -15,8 +15,8 @@ export const firebaseProviders = [
     inject: ['ConfigService'],
   }, {
     provide: 'Firestore',
-    useFactory: (app: admin.app.App): any => {
-      const fs = app.firestore()
+    useFactory: (app: admin.app.App): admin.firestore.Firestore => {
+      const fs: admin.firestore.Firestore = app.firestore()
       fs.settings({
         timestampsInSnapshots: true,
       })
