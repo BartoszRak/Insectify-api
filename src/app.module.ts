@@ -3,12 +3,11 @@ import { AppController } from './app.controller'
 import { AppService } from './app.service'
 
 import { ConfigModule } from './common/config/config.module'
-import { StorageModule } from './common/storage/storage.module'
 import { AuthModule } from './modules/auth/auth.module'
 import { LoggerMiddleware } from './common/middleware/logger.middleware'
 
 @Module({
-  imports: [ConfigModule, StorageModule, AuthModule],
+  imports: [ConfigModule, AuthModule],
   controllers: [AppController],
   providers: [AppService],
 })
