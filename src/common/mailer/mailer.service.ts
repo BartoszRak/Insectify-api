@@ -1,34 +1,47 @@
 import { Injectable, Inject } from '@nestjs/common'
 import * as nodemailer from 'nodemailer'
 
-import { ConfigService } from '../config/config.service'
+export interface IMailerAuth {
+  user: string
+  pass: string
+}
 
 export interface IMailerConfiguration {
-  email: string
-  password: string
+  host: string
+  port: number
+  secure: boolean
+  service: string
+  auth: IMailerAuth
+  tls: {
+    rejectUnauthorized: boolean
+  }
 }
 
 @Injectable()
 export class MailerService {
 
   private transporter: nodemailer.Transporter
-  private configuration: IMailerConfiguration
 
   constructor(
-    email: string,
-    password: string,
-    @Inject('ConfigService') private config: ConfigService,
+    private configuration: IMailerConfiguration
   ) {
-    this.configuration = {
-      email,
-      password,
-    }
+    this.init()
   }
 
-  public init = async () => {
-    const { config } = this
+  private init = () => {
+    const { configuration } = this
     this.transporter = nodemailer.createTransport({
-      ...config,
+      ...configuration,
     })
+  }
+  
+  async send(options: nodemailer.SendMailOptions): Promise<void | string> {
+    if (!this.transporter) throw new Error('Error with transport occured.')
+    try {
+      const info: string = await this.transporter.sendMail(options)
+      return info
+    } catch (err) {
+      throw new Error(err)
+    }
   }
 }
