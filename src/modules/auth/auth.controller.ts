@@ -1,13 +1,14 @@
 import { Controller, Injectable, Inject, Post, Body, HttpException, HttpStatus, Res } from '@nestjs/common'
-import { Response } from 'express'
+import * as nodemailer from 'nodemailer'
 import * as admin from 'firebase-admin'
 import * as jwt from 'jsonwebtoken'
 
 import { ConfigService } from '../../common/config/config.service'
 import { RegisterUserDto } from './dto/RegisterUser.dto'
-import { LoginUserDto } from './dto/LoginUser.dto';
+import { LoginUserDto } from './dto/LoginUser.dto'
 import { UserFsModel, UserSessionModel } from '../../models'
 import { hashPasswordAsync, checkPasswordAsync } from '../../services/helpers/PasswordHelper'
+import { MailerService } from '../../common/mailer/mailer.service'
 
 @Injectable()
 @Controller('auth')
@@ -15,6 +16,7 @@ export class AuthController {
   constructor(
     @Inject('Firestore') private fs: admin.firestore.Firestore,
     @Inject('ConfigService') private config: ConfigService,
+    @Inject('MainMailer') private mailer: MailerService,
   ) {}
 
   @Post('/register')
@@ -33,6 +35,23 @@ export class AuthController {
         salt,
         passwordHash: hash,
       })})
+
+      const mailOptions: nodemailer.SendMailOptions = {
+        date: new Date(),
+        from: 'Insectify Shop',
+        headers: {
+          'Content-type': 'text/html; charset=UTF-8',
+        },
+        html: `
+        <h1>Insectiy Shop</h1>
+        <h2>Your account has been created!</h2>
+        `,
+        priority: 'normal',
+        subject: 'Insectify - Your account has been created!',
+        to: email,
+      }
+
+      await this.mailer.send(mailOptions)
       return new HttpException('User has been created', HttpStatus.OK)
     } catch(err) {
       throw new HttpException('Creating user went wrong.', HttpStatus.GONE)
@@ -64,6 +83,7 @@ export class AuthController {
       algorithm: 'HS256',
       expiresIn: 3600,
     })
+  
     return token
   }
 }
