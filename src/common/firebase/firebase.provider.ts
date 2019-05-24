@@ -1,8 +1,8 @@
 import * as admin from 'firebase-admin'
 
 import { ConfigService } from '../config/config.service'
-const serviceAccount = require('./service-account.json')
-
+import * as serviceAccountJson from './service-account.json'
+const serviceAccount: any = { ...serviceAccountJson }
 export const firebaseProviders = [
   {
     provide: 'FirebaseApp',

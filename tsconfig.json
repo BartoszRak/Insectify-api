@@ -11,6 +11,12 @@
     "baseUrl": "./",
     "incremental": true,
     "resolveJsonModule": true,
+    "skipLibCheck": true,
+    "noLib": false,
+    "noImplicitAny": false,
   },
-  "exclude": ["node_modules"]
+  "exclude": [
+    "node_modules",
+    "**/*.spec.ts"
+  ]
 }
