@@ -3,12 +3,12 @@ import * as nodemailer from 'nodemailer'
 import * as admin from 'firebase-admin'
 import * as jwt from 'jsonwebtoken'
 
-import { ConfigService } from '../../common/config/config.service'
+import { ConfigService } from '../../common2/config/config.service'
 import { RegisterUserDto } from './dto/RegisterUser.dto'
 import { LoginUserDto } from './dto/LoginUser.dto'
 import { UserFsModel, UserSessionModel } from '../../models'
-import { hashPasswordAsync, checkPasswordAsync } from '../../services/helpers/PasswordHelper'
-import { MailerService } from '../../common/mailer/mailer.service'
+import { hashPasswordAsync, checkPasswordAsync } from '../../common/helpers/PasswordHelper'
+import { MailerService } from '../../common2/mailer/mailer.service'
 
 @Injectable()
 @Controller('auth')

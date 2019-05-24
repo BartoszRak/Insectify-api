@@ -1,4 +1,4 @@
-import { copyFields } from '../services/Utils'
+import { copyFields } from '../common/Utils'
 
 export class UserFsModel {
   public email: string = undefined
