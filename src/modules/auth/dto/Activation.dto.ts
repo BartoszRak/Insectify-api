@@ -1,6 +1,6 @@
 import { IsEmail, IsString, IsDefined } from 'class-validator'
 
-export class EmailActivationDto {
+export class ActivationDto {
   @IsString()
   @IsDefined()
   activationToken: string

@@ -1,13 +1,11 @@
-import { Controller, Injectable, Inject, Post, Body, HttpException, HttpStatus, Res } from '@nestjs/common'
-import { InjectSchedule, Schedule } from 'nest-schedule'
+import { Controller, Injectable, Inject, Post, Body, HttpException, HttpStatus } from '@nestjs/common'
 import * as admin from 'firebase-admin'
 import * as jwt from 'jsonwebtoken'
 
 import { NotificationsService } from './notifications.service'
-import { RegisterUserDto } from './dto/RegisterUser.dto'
-import { LoginUserDto } from './dto/LoginUser.dto'
-import { EmailActivationDto } from './dto/EmailActivation.dto'
 import { ConfigService } from '../../services/config/config.service'
+import { ActivationService } from './activation.service'
+import { RegisterUserDto, LoginUserDto, ActivationDto, RequestActivationDto } from './dto'
 import { UserFsModel, UserSessionModel } from '../../models'
 import { hashPasswordAsync, checkPasswordAsync } from '../../common/helpers/PasswordHelper'
 
@@ -18,35 +16,29 @@ export class AuthController {
     @Inject('Firestore') private fs: admin.firestore.Firestore,
     @Inject('ConfigService') private config: ConfigService,
     @Inject('NotificationsService') private notification: NotificationsService,
-    @InjectSchedule() private readonly schedule: Schedule,
+    @Inject('ActivationService') private activation: ActivationService,
   ) {}
 
   @Post('/register')
-  async register(@Body() registerUser: RegisterUserDto): Promise<HttpException> {
+  public async register(@Body() registerUser: RegisterUserDto): Promise<HttpException> {
     const { email, password } = registerUser
     
     const res = await this.fs.collection('users').where('email', '==', email).get()
     if (res.docs.length !== 0) {
-      throw new HttpException('User with that email already exist.', HttpStatus.BAD_REQUEST)
+      throw new HttpException('User with that email already exists.', HttpStatus.BAD_REQUEST)
     }
 
     try {
       const { hash: passwordHash, salt: passwordSalt }: { hash: string, salt: string } = await hashPasswordAsync(password, 40)
-      const { hash: activationHash, salt: activationSalt }: { hash: string, salt: string } = await hashPasswordAsync(email)
-      const addUserRes: any = await this.fs.collection('users').add({...new UserFsModel({
+
+      await this.fs.collection('users').add({...new UserFsModel({
         email,
         passwordSalt,
         passwordHash,
-        activationSalt,
+        activationSalt: null,
       })})
-
-      await this.notification.sendRegistrationEmail(email, activationHash)
-      this.schedule.scheduleTimeoutJob('activation-token-expiration', 10000, (): any => {
-        this.fs.collection('users').doc(addUserRes.id).update({
-          activationSalt: null,
-        })
-        
-      })
+      await this.notification.sendRegistrationEmail(email)
+      await this.activation.requestActivation(email)
 
       return new HttpException('User has been created', HttpStatus.OK)
     } catch(err) {
@@ -55,7 +47,7 @@ export class AuthController {
   }
 
   @Post('/login')
-  async login(@Body() loginUser: LoginUserDto): Promise<string> {
+  public async login(@Body() loginUser: LoginUserDto): Promise<string> {
     const { email, password } = loginUser
 
     const queryRes = await this.fs.collection('users').where('email', '==', email).limit(1).get()
@@ -84,10 +76,10 @@ export class AuthController {
   }
 
   @Post('/activate')
-  async activate(@Body() activation: EmailActivationDto): Promise<HttpException> {
+  public async activate(@Body() activation: ActivationDto): Promise<HttpException> {
     const { activationToken, email } = activation
 
-    const queryRes = await this.fs.collection('users').where('email', '==', email).limit(1).get()
+    const queryRes: any = await this.fs.collection('users').where('email', '==', email).limit(1).get()
     if (queryRes.docs.length === 0) {
       throw new HttpException('Activation failed. There is no user with that email assigned.', HttpStatus.BAD_REQUEST)
     }
@@ -108,6 +100,18 @@ export class AuthController {
       return new HttpException('Activation successful.', HttpStatus.OK)
     } catch(err) {
       throw new HttpException('Activation process failed.', HttpStatus.GONE)
+    }
+  }
+
+  @Post('/requestActivation')
+  public async requestActivation(@Body() requestActivation: RequestActivationDto): Promise<any> {
+    const { email } = requestActivation
+    try {
+      await this.activation.requestActivation(email)
+      return new HttpException('Activation has been requested successfully.', HttpStatus.OK)
+    } catch(err) {
+      console.log(err)
+      throw new HttpException('Requesting new activation process failed.', HttpStatus.GONE)
     }
   }
 }
