@@ -2,8 +2,10 @@ import { copyFields } from '../common/Utils'
 
 export class UserFsModel {
   public email: string = undefined
-  public salt: string = undefined
+  public passwordSalt: string = undefined
   public passwordHash: string = undefined
+  public activationSalt: string = undefined
+  public isEmailConfirmed: boolean = false
 
   constructor(data?: any) {
     copyFields(data, this)

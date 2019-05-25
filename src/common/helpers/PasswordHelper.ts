@@ -2,8 +2,8 @@ import * as bcrypt from 'bcryptjs'
 
 const iterations: number = 10
 
-export async function hashPasswordAsync(password: string): Promise<{ hash: string, salt: string}> | undefined {
-  const salt: string = await bcrypt.genSalt(40)
+export async function hashPasswordAsync(password: string = '', saltLength: number = 32): Promise<{ hash: string, salt: string}> | undefined {
+  const salt: string = await bcrypt.genSalt(saltLength)
 
   if (!salt) return undefined
 
