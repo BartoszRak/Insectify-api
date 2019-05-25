@@ -1,4 +1,5 @@
 import { Controller, Injectable, Inject, Post, Body, HttpException, HttpStatus, Res } from '@nestjs/common'
+import { InjectSchedule, Schedule } from 'nest-schedule'
 import * as admin from 'firebase-admin'
 import * as jwt from 'jsonwebtoken'
 
@@ -16,7 +17,8 @@ export class AuthController {
   constructor(
     @Inject('Firestore') private fs: admin.firestore.Firestore,
     @Inject('ConfigService') private config: ConfigService,
-    @Inject('NotificationsService') private notification: NotificationsService
+    @Inject('NotificationsService') private notification: NotificationsService,
+    @InjectSchedule() private readonly schedule: Schedule,
   ) {}
 
   @Post('/register')
@@ -31,14 +33,21 @@ export class AuthController {
     try {
       const { hash: passwordHash, salt: passwordSalt }: { hash: string, salt: string } = await hashPasswordAsync(password, 40)
       const { hash: activationHash, salt: activationSalt }: { hash: string, salt: string } = await hashPasswordAsync(email)
-      this.fs.collection('users').add({...new UserFsModel({
+      const addUserRes: any = await this.fs.collection('users').add({...new UserFsModel({
         email,
         passwordSalt,
         passwordHash,
         activationSalt,
       })})
 
-      this.notification.sendRegistrationEmail(email, activationHash)
+      await this.notification.sendRegistrationEmail(email, activationHash)
+      this.schedule.scheduleTimeoutJob('activation-token-expiration', 10000, (): any => {
+        this.fs.collection('users').doc(addUserRes.id).update({
+          activationSalt: null,
+        })
+        
+      })
+
       return new HttpException('User has been created', HttpStatus.OK)
     } catch(err) {
       throw new HttpException('Creating user went wrong.', HttpStatus.GONE)
@@ -88,7 +97,7 @@ export class AuthController {
 
     const isTokenValid: boolean = await checkPasswordAsync(email, activationSalt, activationToken)
     if(!isTokenValid) {
-      throw new HttpException('Activation token is invalid', HttpStatus.BAD_REQUEST)
+      throw new HttpException('Activation token is invalid or outdated.', HttpStatus.BAD_REQUEST)
     }
 
     try {

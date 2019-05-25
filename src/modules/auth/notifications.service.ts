@@ -22,6 +22,7 @@ export class NotificationsService {
         <h2>Your account has been created!</h2>
         <br />
         <h3>Activaiton link: <a href="https://bartoszrak.com?accountToActivate=${email}&activationToken=${activationToken}">Click to activate your account</a></h3>
+        <p>* Link expiration time is 30 min</p>
         `,
         priority: 'normal',
         subject: 'Insectify - Your account has been created!',
