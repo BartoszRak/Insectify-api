@@ -1,15 +1,14 @@
 import { Controller, Injectable, Inject, Post, Body, HttpException, HttpStatus, Res } from '@nestjs/common'
-import * as nodemailer from 'nodemailer'
 import * as admin from 'firebase-admin'
 import * as jwt from 'jsonwebtoken'
 
-import { ConfigService } from '../../services/config/config.service'
+import { NotificationsService } from './notifications.service'
 import { RegisterUserDto } from './dto/RegisterUser.dto'
 import { LoginUserDto } from './dto/LoginUser.dto'
 import { EmailActivationDto } from './dto/EmailActivation.dto'
+import { ConfigService } from '../../services/config/config.service'
 import { UserFsModel, UserSessionModel } from '../../models'
 import { hashPasswordAsync, checkPasswordAsync } from '../../common/helpers/PasswordHelper'
-import { MailerService } from '../../services/mailer/mailer.service'
 
 @Injectable()
 @Controller('auth')
@@ -17,7 +16,7 @@ export class AuthController {
   constructor(
     @Inject('Firestore') private fs: admin.firestore.Firestore,
     @Inject('ConfigService') private config: ConfigService,
-    @Inject('MainMailer') private mailer: MailerService,
+    @Inject('NotificationsService') private notification: NotificationsService
   ) {}
 
   @Post('/register')
@@ -39,24 +38,7 @@ export class AuthController {
         activationSalt,
       })})
 
-      const mailOptions: nodemailer.SendMailOptions = {
-        date: new Date(),
-        from: 'Insectify Shop',
-        headers: {
-          'Content-type': 'text/html; charset=UTF-8',
-        },
-        html: `
-        <h1>Insectiy Shop</h1>
-        <h2>Your account has been created!</h2>
-        <br />
-        <h3>Activaiton link: <a href="https://bartoszrak.com?accountToActivate=${email}&activationToken=${activationHash}">Click to activate your account</a></h3>
-        `,
-        priority: 'normal',
-        subject: 'Insectify - Your account has been created!',
-        to: email,
-      }
-
-      await this.mailer.send(mailOptions)
+      this.notification.sendRegistrationEmail(email, activationHash)
       return new HttpException('User has been created', HttpStatus.OK)
     } catch(err) {
       throw new HttpException('Creating user went wrong.', HttpStatus.GONE)
