@@ -2,7 +2,7 @@ import { Inject, Injectable, CanActivate, ExecutionContext, UnauthorizedExceptio
 import * as jwt from 'jsonwebtoken'
 import * as dotenv from 'dotenv'
 import * as fs from 'fs'
-
+import * as yaml from 'js-yaml'
 import { DecodedToken } from './interfaces/decodedToken.interface'
 import { ConfigService } from '../../modules/config/config.service'
 import { Reflector } from '@nestjs/core'
@@ -11,6 +11,7 @@ import { Reflector } from '@nestjs/core'
 export class AccessGuard implements CanActivate {
   private readonly config: ConfigService = new ConfigService('./secrets.env')
   private readonly reflector: Reflector = new Reflector()
+  private readonly permissions: any = yaml.safeLoad(fs.readFileSync('./src/services/guards/access/permissions.yml', 'utf-8'))
 
   async canActivate(
     context: ExecutionContext,
@@ -31,6 +32,8 @@ export class AccessGuard implements CanActivate {
       const decodedToken: DecodedToken = await jwt.verify(token, this.config.get('JWT_SECRET'))
       const user = decodedToken.data.user
       console.log(user)
+      console.log(this.permissions)
+      console.log(request.url)
       // add permissions-based authorization here
     } catch(err) {
       throw new UnauthorizedException('You have no access to this resource!')

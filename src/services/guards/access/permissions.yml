@@ -1,5 +1,4 @@
 admin:
-  - app
-  - app.hello
+  - auth.*
 user:
-  - app
+  - auth.isAuth
