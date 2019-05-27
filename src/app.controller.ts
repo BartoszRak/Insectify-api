@@ -1,6 +1,8 @@
 import { Controller, Get } from '@nestjs/common'
 import { AppService } from './app.service'
 
+import { Protected } from './decorators'
+
 @Controller()
 export class AppController {
   constructor(private readonly appService: AppService) {}
@@ -16,6 +18,7 @@ export class AppController {
   }
 
   @Get('/helloWithEnv')
+  @Protected()
   getHelloWithEnv(): string {
     return this.appService.getHelloWithEnv()
   }
