@@ -1,0 +1,5 @@
+admin:
+  - app
+  - app.hello
+user:
+  - app
