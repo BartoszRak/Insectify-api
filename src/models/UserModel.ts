@@ -6,6 +6,7 @@ export class UserFsModel {
   public passwordHash: string = undefined
   public activationSalt: string = undefined
   public isEmailConfirmed: boolean = false
+  public roles: { [key: string]: any } = {}
 
   constructor(data?: any) {
     copyFields(data, this)
@@ -14,6 +15,7 @@ export class UserFsModel {
 
 export class UserSessionModel {
   public email: string = undefined
+  public roles: { [key: string]: any } = {}
 
   constructor(data?: any) {
     copyFields(data, this)
