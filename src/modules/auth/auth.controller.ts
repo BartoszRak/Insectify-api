@@ -1,4 +1,4 @@
-import { Controller, Injectable, Inject, Post, Body, HttpException, HttpStatus } from '@nestjs/common'
+import { Controller, Injectable, Inject, Post, Body, HttpException, HttpStatus, Get } from '@nestjs/common'
 import * as admin from 'firebase-admin'
 import * as jwt from 'jsonwebtoken'
 
@@ -8,6 +8,7 @@ import { ActivationService } from './activation.service'
 import { RegisterUserDto, LoginUserDto, ActivationDto, RequestActivationDto } from './dto'
 import { UserFsModel, UserSessionModel } from '../../models'
 import { hashPasswordAsync, checkPasswordAsync } from '../../common/helpers/PasswordHelper'
+import { Protected } from '../../decorators'
 
 @Injectable()
 @Controller('auth')
@@ -113,5 +114,11 @@ export class AuthController {
       console.log(err)
       throw new HttpException('Requesting new activation process failed.', HttpStatus.GONE)
     }
+  }
+
+  @Get('/isAuth')
+  @Protected()
+  public async isAuth(): Promise<any> {
+    return true
   }
 }
