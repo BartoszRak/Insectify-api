@@ -1,21 +1,8 @@
 import { Injectable, Inject } from '@nestjs/common'
 import * as nodemailer from 'nodemailer'
 
-export interface IMailerAuth {
-  user: string
-  pass: string
-}
 
-export interface IMailerConfiguration {
-  host: string
-  port: number
-  secure: boolean
-  service: string
-  auth: IMailerAuth
-  tls: {
-    rejectUnauthorized: boolean
-  }
-}
+import { MailerConfiguration } from './interfaces/mailerConfiguration.interface'
 
 @Injectable()
 export class MailerService {
@@ -23,7 +10,7 @@ export class MailerService {
   private transporter: nodemailer.Transporter
 
   constructor(
-    private configuration: IMailerConfiguration
+    private configuration: MailerConfiguration
   ) {
     this.init()
   }
