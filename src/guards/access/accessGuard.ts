@@ -11,7 +11,7 @@ import { Reflector } from '@nestjs/core'
 export class AccessGuard implements CanActivate {
   private readonly config: ConfigService = new ConfigService('./secrets.env')
   private readonly reflector: Reflector = new Reflector()
-  private readonly permissions: any = yaml.safeLoad(fs.readFileSync('./src/services/guards/access/permissions.yml', 'utf-8'))
+  private readonly permissions: any = yaml.safeLoad(fs.readFileSync('./src/guards/access/permissions.yml', 'utf-8'))
 
   async canActivate(
     context: ExecutionContext,
