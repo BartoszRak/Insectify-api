@@ -5,9 +5,9 @@ import { AuthController } from './auth.controller'
 import { NotificationsService } from './notifications.service'
 import { ActivationService } from './activation.service'
 
-import { FirebaseModule } from '../../services/modules/firebase/firebase.module'
-import { ConfigModule } from '../../services/modules/config/config.module'
-import { MailerModule } from '../../services/modules/mailer/mailer.module'
+import { FirebaseModule } from '../firebase/firebase.module'
+import { ConfigModule } from '../config/config.module'
+import { MailerModule } from '../mailer/mailer.module'
 
 @Module({
   imports: [FirebaseModule, ConfigModule, MailerModule, ScheduleModule.register()],
