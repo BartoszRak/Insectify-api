@@ -2,9 +2,9 @@ import { Module, NestModule, MiddlewareConsumer, RequestMethod } from '@nestjs/c
 import { AppController } from './app.controller'
 import { AppService } from './app.service'
 
-import { ConfigModule } from './services/modules/config/config.module'
+import { ConfigModule } from './modules/config/config.module'
 import { AuthModule } from './modules/auth/auth.module'
-import { LoggerMiddleware } from './services/middleware/logger.middleware'
+import { LoggerMiddleware } from './middleware/logger.middleware'
 
 @Module({
   imports: [ConfigModule, AuthModule],

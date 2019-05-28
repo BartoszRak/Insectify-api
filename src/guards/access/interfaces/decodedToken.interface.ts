@@ -1,4 +1,4 @@
-import { UserSessionModel } from '../../../../models/UserModel'
+import { UserSessionModel } from '../../../models/UserModel'
 
 export interface DecodedToken {
   data: {
