@@ -3,7 +3,7 @@ import * as admin from 'firebase-admin'
 import * as jwt from 'jsonwebtoken'
 
 import { NotificationsService } from './notifications.service'
-import { ConfigService } from '../../services/modules/config/config.service'
+import { ConfigService } from '../config/config.service'
 import { ActivationService } from './activation.service'
 import { RegisterUserDto, LoginUserDto, ActivationDto, RequestActivationDto } from './dto'
 import { UserFsModel, UserSessionModel } from '../../models'
