@@ -5,8 +5,7 @@ export class DatabaseClient{
   private mongoClient: MongoClient
   public connected: boolean = false
 
-  public async connect(): Promise<Db> {
-    console.log('CONNECTION')
+  public async connect(connectionInterval: number = 5000): Promise<Db> {
     while (!this.connected) {
       try {
         this.mongoClient = await MongoClient.connect('mongodb://localhost/nest', { useNewUrlParser: true });
@@ -14,16 +13,27 @@ export class DatabaseClient{
         this.connected = true
 
       } catch(err) {
-        console.log(err.message)
-        console.log('Retrying connection')
-        setTimeout(() => this.connect(), 1000)
+        console.log(`# Database Client == Error: ${err.message}`)
+        console.log(`# Database Client == Retrying connection in ${connectionInterval} ms...`)
+        await new Promise((resolve: any, reject: any) => {
+          try {
+            setTimeout(() => {
+              this.connect()
+              resolve()
+            }, connectionInterval)
+          } catch(err) {
+            reject()
+          }
+        })
+        
       }
     }
     return this.db
   }
 
   public async close(): Promise<any> {
-    return await this.mongoClient.close()
+    await this.mongoClient.close()
+    this.connected = false
   }
 
 }
