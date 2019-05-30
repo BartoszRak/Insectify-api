@@ -12,7 +12,8 @@ export class Repository<T> {
       const query = {
         _id: new ObjectID(id)
       }
-      return await this.db.collection(this.name).findOne(query)
+      const res = await this.db.collection(this.name).findOne(query)
+      return res
     } catch(err) {
       throw new Error(`Database error: ${err.message}`)
     }

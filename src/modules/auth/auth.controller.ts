@@ -37,6 +37,9 @@ export class AuthController {
         passwordSalt,
         passwordHash,
         activationSalt: null,
+        roles: {
+          user: true,
+        }
       })})
       await this.notification.sendRegistrationEmail(email)
       await this.activation.requestActivation(email)

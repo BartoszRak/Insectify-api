@@ -29,7 +29,8 @@ export class AppController {
 
   @Post('/testDb')
   async testDb(): Promise<string> {
-    console.log(await this.storage.users.getOne('5cedc0a53765591700725069'))
+    const user = await this.storage.users.getOne('5cedc0a53765591700725069')
+    console.log(user)
     return 'test database'
   }
 }

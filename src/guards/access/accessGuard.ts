@@ -31,10 +31,20 @@ export class AccessGuard implements CanActivate {
       const token: string = authorization.split('Bearer ')[1]
       const decodedToken: DecodedToken = await jwt.verify(token, this.config.get('JWT_SECRET'))
       const user = decodedToken.data.user
-      console.log(user)
-      console.log(this.permissions)
-      console.log(request.url)
-      // add permissions-based authorization here
+      const { roles } = user
+      const mergedUserPermissions = Object.entries(roles).reduce((acc, currValue) => {
+        if (currValue[1] !== true) return acc
+        const givenRole = currValue[0]
+
+        const newRolesToAdd = this.permissions[givenRole].filter(roleToAdd => {
+          console.log(roleToAdd)
+          if (acc.findIndex(role => role === roleToAdd) === 1) return false
+          return true
+        }) // dont add duplicates
+
+        return [ ...acc, ...newRolesToAdd]
+      },[])
+      console.log(mergedUserPermissions)
     } catch(err) {
       throw new UnauthorizedException('You have no access to this resource!')
     }
