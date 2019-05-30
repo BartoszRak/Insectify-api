@@ -6,7 +6,7 @@ import { NotificationsService } from './notifications.service'
 import { ConfigService } from '../config/config.service'
 import { ActivationService } from './activation.service'
 import { RegisterUserDto, LoginUserDto, ActivationDto, RequestActivationDto } from './dto'
-import { UserFsModel, UserSessionModel } from '../../models'
+import { UserDbModel, UserSessionModel } from '../../models'
 import { hashPasswordAsync, checkPasswordAsync } from '../../common/helpers/PasswordHelper'
 import { Protected } from '../../decorators'
 
@@ -32,7 +32,7 @@ export class AuthController {
     try {
       const { hash: passwordHash, salt: passwordSalt }: { hash: string, salt: string } = await hashPasswordAsync(password, 40)
 
-      await this.fs.collection('users').add({...new UserFsModel({
+      await this.fs.collection('users').add({...new UserDbModel({
         email,
         passwordSalt,
         passwordHash,
@@ -55,7 +55,7 @@ export class AuthController {
     if (queryRes.docs.length === 0) {
       throw new HttpException('There is no user with that email assigned.', HttpStatus.BAD_REQUEST)
     }
-    const user: UserFsModel = new UserFsModel(queryRes.docs[0].data())
+    const user: UserDbModel = new UserDbModel(queryRes.docs[0].data())
     const { passwordHash, passwordSalt } = user
     const isPasswordValid: boolean = await checkPasswordAsync(password, passwordSalt, passwordHash)
     if(!isPasswordValid) {
@@ -85,7 +85,7 @@ export class AuthController {
       throw new HttpException('Activation failed. There is no user with that email assigned.', HttpStatus.BAD_REQUEST)
     }
 
-    const user: UserFsModel = new UserFsModel(queryRes.docs[0].data())
+    const user: UserDbModel = new UserDbModel(queryRes.docs[0].data())
     const { activationSalt } = user
 
     const isTokenValid: boolean = await checkPasswordAsync(email, activationSalt, activationToken)

@@ -4,7 +4,7 @@ import { InjectSchedule, Schedule } from 'nest-schedule'
 
 import { NotificationsService } from './notifications.service'
 import { hashPasswordAsync } from '../../common/helpers/PasswordHelper'
-import { UserFsModel } from '../../models'
+import { UserDbModel } from '../../models'
 
 Injectable()
 export class ActivationService {
@@ -23,7 +23,7 @@ export class ActivationService {
         throw new Error('There is no user with provided email to activate.')
       }
 
-      const user: UserFsModel = new UserFsModel(query.docs[0].data())
+      const user: UserDbModel = new UserDbModel(query.docs[0].data())
       const userId = query.docs[0].ref.id
 
       if (user.isEmailConfirmed) {

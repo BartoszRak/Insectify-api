@@ -1,11 +1,15 @@
-import { Controller, Get } from '@nestjs/common'
-import { AppService } from './app.service'
+import { Controller, Get, Post, Inject } from '@nestjs/common'
 
+import { AppService } from './app.service'
+import { StorageService } from './modules/storage/storage.service'
 import { Protected } from './decorators'
 
 @Controller()
 export class AppController {
-  constructor(private readonly appService: AppService) {}
+  constructor(
+    private readonly appService: AppService,
+    @Inject('StorageService') private readonly storage: StorageService,
+  ) {}
 
   @Get('/')
   get(): string {
@@ -21,5 +25,11 @@ export class AppController {
   @Protected()
   getHelloWithEnv(): string {
     return this.appService.getHelloWithEnv()
+  }
+
+  @Post('/testDb')
+  async testDb(): Promise<string> {
+    console.log(await this.storage.users.getOne('5cedc0a53765591700725069'))
+    return 'test database'
   }
 }
