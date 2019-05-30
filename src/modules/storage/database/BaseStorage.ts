@@ -7,19 +7,17 @@ export abstract class BaseStorage {
 
   constructor() {
     this.dbClient = new DatabaseClient()
-    this.connect()
   }
 
   public async connect() {
     this.db = await this.dbClient.connect()
-    await this.initDb()
+    console.log('# Base Storage == Database client connected.')
   }
 
   public async close() {
     if (this.dbClient && this.dbClient.connected) {
       await this.dbClient.close()
+      console.log('# Base Storage == Database client disconnected.')
     }
   }
-
-  protected abstract async initDb()
 }
