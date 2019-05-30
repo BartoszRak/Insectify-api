@@ -1,1 +1,2 @@
-export { UserFsModel, UserSessionModel } from './UserModel'
+export { UserDbModel, UserSessionModel } from './UserModel'
+export { BaseDbModel } from './BaseModel'
