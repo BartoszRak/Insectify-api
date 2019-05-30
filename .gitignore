@@ -1,6 +1,7 @@
 # custom
 *.env
 *service-account.json
+data
 
 # compiled output
 /dist

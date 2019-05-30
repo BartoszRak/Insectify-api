@@ -1,11 +1,10 @@
 import { Module } from '@nestjs/common'
 
-import { FirebaseModule } from '../firebase/firebase.module'
 import { StorageService } from './storage.service'
 
 
 @Module({
-  imports: [FirebaseModule],
+  imports: [],
   controllers: [],
   providers: [StorageService],
   exports: [StorageService],

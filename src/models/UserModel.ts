@@ -1,6 +1,6 @@
 import { copyFields } from '../common/Utils'
 
-export class UserFsModel {
+export class UserDbModel {
   public email: string = undefined
   public passwordSalt: string = undefined
   public passwordHash: string = undefined
