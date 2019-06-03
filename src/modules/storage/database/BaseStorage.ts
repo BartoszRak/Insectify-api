@@ -11,13 +11,13 @@ export abstract class BaseStorage {
 
   public async connect() {
     this.db = await this.dbClient.connect()
-    console.log('# Base Storage == Database client connected.')
+    console.log('[Base Storage] Database client connected.')
   }
 
   public async close() {
     if (this.dbClient && this.dbClient.connected) {
       await this.dbClient.close()
-      console.log('# Base Storage == Database client disconnected.')
+      console.log('[Base Storage] Database client disconnected.')
     }
   }
 }

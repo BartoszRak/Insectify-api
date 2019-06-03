@@ -13,8 +13,8 @@ export class DatabaseClient{
         this.connected = true
 
       } catch(err) {
-        console.log(`# Database Client == Error: ${err.message}`)
-        console.log(`# Database Client == Retrying connection in ${connectionInterval} ms...`)
+        console.log(`[Database Client] Error: ${err.message}`)
+        console.log(`[Database Client] Retrying connection in ${connectionInterval} ms...`)
         await new Promise((resolve: any, reject: any) => {
           try {
             setTimeout(() => {

@@ -17,9 +17,9 @@ export class StorageService extends BaseStorage {
 
   private async initStorage(): Promise<void> {
     await this.connect()
-    console.log('# Storage == Connected.')
+    console.log('[Storage] Connected.')
 
     this.users = new Repository<UserDbModel>(this.db, 'users')
-    console.log('# Storage == Repositories initialized.')
+    console.log('[Storage] Repositories initialized.')
   }
 }

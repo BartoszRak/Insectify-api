@@ -12,8 +12,15 @@ export class Repository<T> {
       const query = {
         _id: new ObjectID(id)
       }
-      const res = await this.db.collection(this.name).findOne(query)
-      return res
+      return await this.db.collection(this.name).findOne(query)
+    } catch(err) {
+      throw new Error(`Database error: ${err.message}`)
+    }
+  }
+
+  public async getAll(): Promise<any[]> {
+    try {
+      return await this.db.collection(this.name).find().toArray()
     } catch(err) {
       throw new Error(`Database error: ${err.message}`)
     }
