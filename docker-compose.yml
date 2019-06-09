@@ -1,9 +1,37 @@
-version: '3'
+version: '2'
 
+# networks
+networks:
+  insectify-api:
+# services
 services:
+  # server
+  node-server:
+    build: 
+      context: .
+      dockerfile: Dockerfile.build
+    networks:
+      - "insectify-api"
+    working_dir: /app
+    tty: true
+    volumes:
+      - "./src:/app/src"
+      - "./nest-cli.json:/app/nest-cli.json"
+      - "./nodemon-debug.json:/app/nodemon-debug.json"
+      - "./nodemon.json:/app/nodemon.json"
+      - "./tsconfig.json:/app/tsconfig.json"
+      - "./tslint.json:/app/tslint.json"
+      - "./package.json:/app/package.json"
+      - "./yarn.lock:/app/yarn.lock"
+      - "./secrets.env:/app/secrets.env"
+    ports:
+      - 3000:3000
+  # mongo
   mongodb:
     image: mongo:latest
     container_name: "mongodb"
+    networks: 
+      - "insectify-api"
     environment:
       - MONGO_DATA_DIR=/data/db
       - MONGO_LOG_DIR=/dev/null
@@ -11,4 +39,4 @@ services:
       - ./data/db:/data/db
     ports:
         - 27017:27017
-    command: mongod --smallfiles --logpath=/dev/null # --quiet
+    command: mongod --smallfiles --logpath=/dev/null
