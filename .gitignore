@@ -2,6 +2,7 @@
 *.env
 *service-account.json
 data
+src/config.ts
 
 # compiled output
 /dist

@@ -30,6 +30,6 @@ export class AppController {
   @Post('/testDb')
   async testDb(): Promise<string> {
     const user = await this.storage.users.getOne('5cedc0a53765591700725069')
-    return 'test database'
+    return `${process.env.STAGE} test database`
   }
 }

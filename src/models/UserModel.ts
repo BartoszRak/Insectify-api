@@ -1,4 +1,4 @@
-import { copyFields } from '../common/Utils'
+import { copyFields } from '../common/utils'
 
 export class UserDbModel {
   public email: string = undefined
