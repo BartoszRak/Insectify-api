@@ -3,6 +3,8 @@ import { Args, Query, Resolver } from '@nestjs/graphql'
 
 import { StorageService } from '../storage/storage.service'
 
+import { User } from '../../graphql.schema'
+
 @Resolver('User')
 export class UsersResolvers {
   constructor(
@@ -13,9 +15,15 @@ export class UsersResolvers {
   async getUserById(
     @Args('id')
     id: string,
-  ): Promise<any> {
-    const res: any[] = await this.storage.users.getOne(id)
-    return res
+  ): Promise<User> {
+    const result: User = await this.storage.users.getOne(id)
+    return result
+  }
+
+  @Query()
+  async getUsers(): Promise<User[]> {
+    const result: User[] = await this.storage.users.getAll()
+    return result
   }
 
 }

@@ -1,5 +1,6 @@
 {
   "watch": ["dist"],
   "ext": "js",
+  "ignore": ["src/**/*.spec.ts", "src/graphql.schema.ts"],
   "exec": "node dist/main"
 }

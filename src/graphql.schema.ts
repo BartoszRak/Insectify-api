@@ -6,11 +6,13 @@
 
 /* tslint:disable */
 export abstract class IQuery {
-    abstract getUserById(id?: string): User[] | Promise<User[]>;
+    abstract getUserById(id: string): User | Promise<User>;
+
+    abstract getUsers(): User[] | Promise<User[]>;
 }
 
 export class User {
-    id?: string;
+    id: string;
     email?: string;
     firstName?: string;
     lastName?: string;

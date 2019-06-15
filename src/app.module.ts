@@ -1,5 +1,8 @@
 import { Module, NestModule, MiddlewareConsumer, RequestMethod, UnauthorizedException } from '@nestjs/common'
 import { GraphQLModule } from '@nestjs/graphql'
+import { get, mapKeys } from 'lodash'
+import { join } from 'path'
+import * as jwt from 'jsonwebtoken'
 
 import { AppController } from './app.controller'
 import { AppService } from './app.service'
@@ -8,18 +11,18 @@ import { ConfigModule } from './modules/config/config.module'
 import { AuthModule } from './modules/auth/auth.module'
 import { LoggerMiddleware } from './middleware/logger.middleware'
 import { DateResolver } from './common/scalar-types/date.scalar'
-import { get, mapKeys } from 'lodash'
-import { join } from 'path'
-import * as jwt from 'jsonwebtoken'
 import { jwtSecret } from './config'
+import { UsersModule } from './modules/users/users.module'
 
 @Module({
   imports: [
     ConfigModule,
     AuthModule,
     StorageModule,
+    UsersModule,
     GraphQLModule.forRoot({
       typePaths: ['./**/*.graphql'],
+      introspection: true,
       playground: true,
       resolvers: {}, //{ Date: DateResolver },
       installSubscriptionHandlers: true,

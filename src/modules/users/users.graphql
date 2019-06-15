@@ -1,9 +1,10 @@
 type Query {
-  getUserById(id: String): [User]
+  getUserById(id: ID!): User
+  getUsers: [User]
 }
 
 type User {
-  id: String
+  id: ID!
   email: String
   firstName: String
   lastName: String
