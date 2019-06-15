@@ -23,10 +23,10 @@ import { jwtSecret } from './config'
       playground: true,
       resolvers: {}, //{ Date: DateResolver },
       installSubscriptionHandlers: true,
-      definitions: process.env.STAGE ? {
+      definitions: {
         path: join(process.cwd(), 'src/graphql.schema.ts'),
         outputAs: 'class',
-      } : null,
+      },
       formatError: (error) => {
         delete (error.extensions || {}).exception
         return error

@@ -10,8 +10,22 @@ export abstract class IQuery {
 }
 
 export class User {
-    _id?: string;
-    name?: string;
+    id?: string;
+    email?: string;
+    firstName?: string;
+    lastName?: string;
+    phoneNumber?: string;
+    adress?: UserAdress;
+}
+
+export class UserAdress {
+    country?: string;
+    region?: string;
+    city?: string;
+    postcode?: string;
+    street?: string;
+    house?: string;
+    flat?: string;
 }
 
 export type Date = any;

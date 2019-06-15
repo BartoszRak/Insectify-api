@@ -3,6 +3,20 @@ type Query {
 }
 
 type User {
-  _id: String
-  name: String
+  id: String
+  email: String
+  firstName: String
+  lastName: String
+  phoneNumber: String
+  adress: UserAdress
+}
+
+type UserAdress { 
+  country: String
+  region: String
+  city: String
+  postcode: String
+  street: String
+  house: String
+  flat: String
 }
