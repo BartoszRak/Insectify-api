@@ -12,7 +12,7 @@ export class UsersResolvers {
   ) {}
 
   @Query()
-  async getUserById(
+  async userById(
     @Args('id')
     id: string,
   ): Promise<User> {
@@ -21,8 +21,13 @@ export class UsersResolvers {
   }
 
   @Query()
-  async getUsers(): Promise<User[]> {
-    const result: User[] = await this.storage.users.getAll()
+  async users(
+    @Args('limit')
+    limit: number = 20,
+  ): Promise<User[]> {
+    const result: User[] = await this.storage.users.getList({
+      limit,
+    })
     return result
   }
 

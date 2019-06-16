@@ -6,9 +6,9 @@
 
 /* tslint:disable */
 export abstract class IQuery {
-    abstract getUserById(id: string): User | Promise<User>;
+    abstract userById(id: string): User | Promise<User>;
 
-    abstract getUsers(): User[] | Promise<User[]>;
+    abstract users(limit?: number): User[] | Promise<User[]>;
 }
 
 export class User {

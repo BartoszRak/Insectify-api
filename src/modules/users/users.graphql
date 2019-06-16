@@ -1,6 +1,6 @@
 type Query {
-  getUserById(id: ID!): User
-  getUsers: [User]
+  userById(id: ID!): User
+  users(limit: Int): [User]
 }
 
 type User {
