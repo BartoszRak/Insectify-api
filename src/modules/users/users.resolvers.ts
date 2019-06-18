@@ -23,10 +23,13 @@ export class UsersResolvers {
   @Query()
   async users(
     @Args('limit')
-    limit: number = 20,
+    limit: number,
+    @Args('where')
+    where: { [key: string]: string[] },
   ): Promise<User[]> {
     const result: User[] = await this.storage.users.getList({
       limit,
+      where,
     })
     return result
   }

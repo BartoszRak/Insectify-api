@@ -1,4 +1,4 @@
-import { DatabaseClient } from './DatabaseClient'
+import { DatabaseClient } from './database-client'
 
 export abstract class BaseStorage {
 

@@ -1,23 +1,28 @@
 type Query {
   userById(id: ID!): User
-  users(limit: Int): [User]
+  users(limit: Int, where: [[String]]): [User]
 }
 
 type User {
   id: ID!
+  activationSalt: String
+  passwordHash: String
+  passwordSalt: String
   email: String
+  isEmailConfirmed: Boolean
   firstName: String
   lastName: String
   phoneNumber: String
   adress: UserAdress
+  roles: [String]
 }
 
 type UserAdress { 
   country: String
   region: String
   city: String
-  postcode: String
+  postCode: String
   street: String
-  house: String
-  flat: String
+  houseNumber: String
+  flatNumber: String
 }

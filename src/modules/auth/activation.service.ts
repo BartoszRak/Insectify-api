@@ -3,13 +3,17 @@ import * as admin from 'firebase-admin'
 import { InjectSchedule, Schedule } from 'nest-schedule'
 
 import { NotificationsService } from './notifications.service'
+import { StorageService } from '../storage/storage.service'
 import { hashPasswordAsync } from '../../common/helpers/PasswordHelper'
 import { UserDbModel } from '../../models'
+
+import { User } from '../../graphql.schema'
 
 Injectable()
 export class ActivationService {
   constructor(
     @Inject('Firestore') private fs: admin.firestore.Firestore,
+    @Inject('StorageService') private readonly storage: StorageService,
     @Inject('NotificationsService') private notification: NotificationsService,
     @InjectSchedule() private readonly schedule: Schedule,
   ) {}
@@ -17,31 +21,35 @@ export class ActivationService {
   public async requestActivation(email: string): Promise<void> {
     try {
       const { hash: activationToken, salt: activationSalt }: { hash: string, salt: string } = await hashPasswordAsync(email)
-      const query: any = await this.fs.collection('users').where('email', '==', email).limit(1).get()
+      const query: User[] = await this.storage.users.getList({
+        limit: 1,
+        where: {
+          email: {
+            $eq: email,
+          },
+        }
+      })
 
-      if (query.docs.length === 0) {
+      if (query.length === 0) {
         throw new Error('There is no user with provided email to activate.')
       }
 
-      const user: UserDbModel = new UserDbModel(query.docs[0].data())
-      const userId = query.docs[0].ref.id
-
+      const user: User = query[0]
       if (user.isEmailConfirmed) {
         throw new Error('User with provided email is already active.')
       }
-
-      await this.fs.collection('users').doc(userId).update({
+      
+      await this.storage.users.updateOne({
+        ...user,
         activationSalt,
+      }, {
+        _id: {
+          $eq: user.id,
+        },
       })
       await this.notification.sendActivationEmail(user.email, activationToken)
-
-      this.schedule.scheduleTimeoutJob('activation-token-expiration', 1000 * 60 * 30, (): any => {
-        this.fs.collection('users').doc(userId).update({
-          activationSalt: null,
-        })
-      })
     } catch(err) {
-      throw new Error('Requesting user activation failed!')
+      throw new Error(`Requesting user activation failed! ${err.message}`)
     }
   }  
 }

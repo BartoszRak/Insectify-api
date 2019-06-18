@@ -1,7 +1,7 @@
 import { Injectable, Inject } from '@nestjs/common'
 
-import { BaseStorage } from './database/BaseStorage'
-import { Repository } from './database/Repository'
+import { BaseStorage } from './database/base-storage'
+import { Repository } from './database/repository'
 
 import { User } from '../../graphql.schema'
 
