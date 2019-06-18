@@ -7,7 +7,7 @@ import { ConfigService } from '../config/config.service'
 import { ActivationService } from './activation.service'
 import { StorageService } from '../storage/storage.service'
 import { RegisterUserDto, LoginUserDto, ActivationDto, RequestActivationDto } from './dto'
-import { Session, UserSessionModel } from '../../models'
+import { SessionModel } from './models/session.model'
 import { hashPasswordAsync, checkPasswordAsync } from '../../common/helpers/PasswordHelper'
 import { Protected } from '../../decorators'
 
@@ -97,7 +97,7 @@ export class AuthController {
       throw new HttpException('Password or email is invalid', HttpStatus.GONE)
     }
 
-    const session: any = new Session({ ...user })
+    const session: any = new SessionModel({ ...user })
     const token: string = await jwt.sign({
       data: session,
     }, this.config.get('JWT_SECRET'), {

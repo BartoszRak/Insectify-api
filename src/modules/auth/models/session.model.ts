@@ -1,6 +1,6 @@
-import { copyFields } from '../common/utils'
+import { copyFields } from '../../../common/utils'
 
-export class Session {
+export class SessionModel {
   email: string
   roles: { [key: string]: any }
 

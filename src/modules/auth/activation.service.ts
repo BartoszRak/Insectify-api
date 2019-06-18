@@ -5,7 +5,6 @@ import { InjectSchedule, Schedule } from 'nest-schedule'
 import { NotificationsService } from './notifications.service'
 import { StorageService } from '../storage/storage.service'
 import { hashPasswordAsync } from '../../common/helpers/PasswordHelper'
-import { UserDbModel } from '../../models'
 
 import { User } from '../../graphql.schema'
 
