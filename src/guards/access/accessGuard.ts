@@ -1,6 +1,5 @@
-import { Inject, Injectable, CanActivate, ExecutionContext, UnauthorizedException, HttpException, HttpStatus } from '@nestjs/common'
+import { Injectable, CanActivate, ExecutionContext, UnauthorizedException } from '@nestjs/common'
 import * as jwt from 'jsonwebtoken'
-import * as dotenv from 'dotenv'
 import * as fs from 'fs'
 import * as yaml from 'js-yaml'
 import { DecodedToken } from './interfaces/decodedToken.interface'
@@ -32,7 +31,7 @@ export class AccessGuard implements CanActivate {
       const decodedToken: DecodedToken = await jwt.verify(token, this.config.get('JWT_SECRET'))
       const user = decodedToken.data.user
       const { roles } = user
-      const mergedUserPermissions = Object.entries(roles).reduce((acc, currValue) => {
+      const mergedUserPermissions = roles.reduce((acc, currValue) => {
         if (currValue[1] !== true) return acc
         const givenRole = currValue[0]
 
