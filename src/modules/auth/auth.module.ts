@@ -8,9 +8,10 @@ import { ActivationService } from './activation.service'
 import { FirebaseModule } from '../firebase/firebase.module'
 import { ConfigModule } from '../config/config.module'
 import { MailerModule } from '../mailer/mailer.module'
+import { StorageModule } from '../storage/storage.module'
 
 @Module({
-  imports: [FirebaseModule, ConfigModule, MailerModule, ScheduleModule.register()],
+  imports: [FirebaseModule, ConfigModule, MailerModule, StorageModule, ScheduleModule.register()],
   controllers: [AuthController],
   providers: [NotificationsService, ActivationService],
   exports: [],
