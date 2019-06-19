@@ -54,7 +54,7 @@ export class NotificationsService {
       
       await this.mailer.send(mailOptions)
     } catch(err) {
-      throw new Error(err)
+      throw new Error(err.message)
     }
   }
 }
