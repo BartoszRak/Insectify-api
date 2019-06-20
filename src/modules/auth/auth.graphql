@@ -1,0 +1,40 @@
+type Mutation {
+  register(registerInput: RegisterInput): User
+  login(loginInput: LoginInput): AuthorizationToken
+  activate(activationInput: ActivationInput): User
+  requestActivation(requestActivationInput: RequestActivationInput): User
+}
+
+type AuthorizationToken { 
+  token: String
+  expireTime: Int
+}
+
+input RegisterInput {
+  email: String
+  firstName: String
+  password: String
+  lastName: String
+  phoneNumber: String
+  country: String
+  region: String
+  city: String
+  postCode: String
+  street: String
+  houseNumber: String
+  flatNumber: String
+}
+
+input LoginInput {
+  email: String
+  password: String
+}
+
+input ActivationInput {
+  activationToken: String
+  email: String
+}
+
+input RequestActivationInput {
+  email: String
+}

@@ -1,7 +1,8 @@
-import { IsEmail, IsDefined } from 'class-validator'
+import { IsEmail, IsNotEmpty } from 'class-validator'
+import { RequestActivationInput } from '../../../graphql.schema'
 
-export class RequestActivationDto {
+export class RequestActivationDto extends RequestActivationInput {
   @IsEmail()
-  @IsDefined()
+  @IsNotEmpty()
   email: string
 }

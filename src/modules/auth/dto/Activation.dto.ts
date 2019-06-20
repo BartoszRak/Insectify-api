@@ -1,11 +1,12 @@
-import { IsEmail, IsString, IsDefined } from 'class-validator'
+import { IsEmail, IsString, IsNotEmpty } from 'class-validator'
+import { ActivationInput } from '../../../graphql.schema'
 
-export class ActivationDto {
+export class ActivationDto extends ActivationInput {
+  @IsNotEmpty()
   @IsString()
-  @IsDefined()
   activationToken: string
 
+  @IsNotEmpty()
   @IsEmail()
-  @IsDefined()
   email: string
 }

@@ -5,6 +5,50 @@
  */
 
 /* tslint:disable */
+export class ActivationInput {
+    activationToken?: string;
+    email?: string;
+}
+
+export class LoginInput {
+    email?: string;
+    password?: string;
+}
+
+export class RegisterInput {
+    email?: string;
+    firstName?: string;
+    password?: string;
+    lastName?: string;
+    phoneNumber?: string;
+    country?: string;
+    region?: string;
+    city?: string;
+    postCode?: string;
+    street?: string;
+    houseNumber?: string;
+    flatNumber?: string;
+}
+
+export class RequestActivationInput {
+    email?: string;
+}
+
+export class AuthorizationToken {
+    token?: string;
+    expireTime?: number;
+}
+
+export abstract class IMutation {
+    abstract register(registerInput?: RegisterInput): User | Promise<User>;
+
+    abstract login(loginInput?: LoginInput): AuthorizationToken | Promise<AuthorizationToken>;
+
+    abstract activate(activationInput?: ActivationInput): User | Promise<User>;
+
+    abstract requestActivation(requestActivationInput?: RequestActivationInput): User | Promise<User>;
+}
+
 export abstract class IQuery {
     abstract userById(id: string): User | Promise<User>;
 
