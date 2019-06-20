@@ -10,11 +10,12 @@ import { FirebaseModule } from '../firebase/firebase.module'
 import { ConfigModule } from '../config/config.module'
 import { MailerModule } from '../mailer/mailer.module'
 import { StorageModule } from '../storage/storage.module'
+import { AuthResolvers } from './auth.resolvers'
 
 @Module({
   imports: [FirebaseModule, ConfigModule, MailerModule, StorageModule, ScheduleModule.register()],
   controllers: [AuthController],
-  providers: [NotificationsService, ActivationService, AuthService],
+  providers: [NotificationsService, ActivationService, AuthService, AuthResolvers],
   exports: [],
 })
 export class AuthModule {}

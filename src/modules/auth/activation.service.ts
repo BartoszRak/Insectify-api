@@ -1,6 +1,7 @@
 import { Injectable, Inject } from '@nestjs/common'
 import * as admin from 'firebase-admin'
 import { InjectSchedule, Schedule } from 'nest-schedule'
+import { ObjectID } from 'mongodb'
 
 import { NotificationsService } from './notifications.service'
 import { StorageService } from '../storage/storage.service'
@@ -17,7 +18,7 @@ export class ActivationService {
     @InjectSchedule() private readonly schedule: Schedule,
   ) {}
 
-  public async requestActivation(email: string): Promise<void> {
+  public async requestActivation(email: string): Promise<User> {
     try {
       const { hash: activationToken, salt: activationSalt }: { hash: string, salt: string } = await hashPasswordAsync(email)
       const query: User[] = await this.storage.users.getList({
@@ -37,16 +38,15 @@ export class ActivationService {
       if (user.isEmailConfirmed) {
         throw new Error('User with provided email is already active.')
       }
-      
-      await this.storage.users.updateOne({
+
+      const activatedUser: User = await this.storage.users.updateOne({
         ...user,
         activationSalt,
       }, {
-        _id: {
-          $eq: user.id,
-        },
+        _id: new ObjectID(user.id),
       })
       await this.notification.sendActivationEmail(user.email, activationToken)
+      return activatedUser
     } catch(err) {
       throw new Error(`Requesting user activation failed! ${err.message}`)
     }

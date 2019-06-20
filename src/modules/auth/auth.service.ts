@@ -1,11 +1,12 @@
 import { Injectable, Inject, HttpStatus, HttpException } from '@nestjs/common'
 import * as jwt from 'jsonwebtoken'
+import { ObjectID } from 'mongodb'
 
 import { NotificationsService } from './notifications.service'
 import { ActivationService } from './activation.service'
 import { StorageService } from '../storage/storage.service'
 import { hashPasswordAsync, checkPasswordAsync } from '../../common/helpers/PasswordHelper'
-import { User } from '../../graphql.schema'
+import { User, AuthorizationToken } from '../../graphql.schema'
 import { RegisterUserDto, LoginUserDto, ActivationDto, RequestActivationDto } from './dto'
 import { SessionModel } from './models/session.model'
 import { jwtSecret } from '../../config'
@@ -18,7 +19,7 @@ export class AuthService {
     @Inject('StorageService') private readonly storage: StorageService,
   ) {}
 
-  public async register(user: RegisterUserDto): Promise<any> {
+  public async register(user: RegisterUserDto): Promise<User> {
     const { email, password, firstName, lastName, postCode, city, region, country, houseNumber, flatNumber, street } = user
     const res: User[] = await this.storage.users.getList({
       limit: 1,
@@ -34,7 +35,7 @@ export class AuthService {
 
     try {
       const { hash: passwordHash, salt: passwordSalt }: { hash: string, salt: string } = await hashPasswordAsync(password, 40)
-      await this.storage.users.insertOne({
+      const createdUser: User = await this.storage.users.insertOne({
         firstName,
         lastName,
         email,
@@ -56,13 +57,13 @@ export class AuthService {
       await this.notification.sendRegistrationEmail(email)
       await this.activation.requestActivation(email)
 
-      return new HttpException('User has been created', HttpStatus.OK)
+      return createdUser
     } catch(err) {
       throw new HttpException(`Creating user went wrong. ${err.message}`, HttpStatus.GONE)
     }
   }
 
-  public async login(user: LoginUserDto): Promise<any> {
+  public async login(user: LoginUserDto): Promise<AuthorizationToken> {
     const { email, password } = user
 
     const queryRes = await this.storage.users.getList({
@@ -88,19 +89,23 @@ export class AuthService {
     if (!isPasswordValid) {
       throw new HttpException('Password or email is invalid', HttpStatus.GONE)
     }
-
+  
+    const expireTime: number = 3600
     const session: any = new SessionModel({ ...user })
     const token: string = await jwt.sign({
       data: session,
     }, jwtSecret, {
       algorithm: 'HS256',
-      expiresIn: 3600,
+      expiresIn: expireTime,
     })
   
-    return token
+    return {
+      token,
+      expireTime,
+    }
   }
 
-  public async activate(activation: ActivationDto): Promise<any> {
+  public async activate(activation: ActivationDto): Promise<User> {
     const { activationToken, email } = activation
 
     const queryRes: any = await this.storage.users.getList({
@@ -125,24 +130,24 @@ export class AuthService {
       throw new HttpException('Activation token is invalid or outdated.', HttpStatus.BAD_REQUEST)
     }
     try {
-      await this.storage.users.updateOne({
+      const activatedUser: User = await this.storage.users.updateOne({
         ...user,
         isEmailConfirmed: true,
         activationSalt: null,
       }, {
-        _id: user.id,
+        _id: new ObjectID(user.id),
       })
-      return new HttpException('Activation successful.', HttpStatus.OK)
+      return activatedUser
     } catch(err) {
       throw new HttpException('Activation process failed.', HttpStatus.GONE)
     }
   }
 
-  public async requestActivation(request: RequestActivationDto): Promise<any> {
+  public async requestActivation(request: RequestActivationDto): Promise<User> {
     const { email } = request
     try {
-      await this.activation.requestActivation(email)
-      return new HttpException('Activation has been requested successfully.', HttpStatus.OK)
+      const user: User = await this.activation.requestActivation(email)
+      return user
     } catch(err) {
       throw new HttpException('Requesting new activation process failed.', HttpStatus.GONE)
     }

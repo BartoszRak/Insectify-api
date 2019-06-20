@@ -3,12 +3,12 @@ import { NestExpressApplication } from '@nestjs/platform-express'
 import { AppModule } from './app.module'
 import { ValidationPipe } from '@nestjs/common'
 
-import { AccessGuard } from './guards/access/accessGuard'
+//import { AccessGuard } from './guards/access/accessGuard'
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule)
   app.useGlobalGuards(
-    new AccessGuard()
+    //new AccessGuard()
   )
   app.useGlobalPipes(
     new ValidationPipe({

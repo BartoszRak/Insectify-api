@@ -1,5 +1,6 @@
 import { Db, ObjectID } from 'mongodb'
 import { BaseModel } from './base-model'
+import { FindOneAndReplaceOption } from 'mongodb'
 
 export class Repository<T extends BaseModel> {
   constructor(
@@ -10,7 +11,7 @@ export class Repository<T extends BaseModel> {
   private mapToModel(data: any): T {
     if (!data) return null
     const { _id, ...obj } = data
-    return { ...obj, id: _id }
+    return { ...obj, id: (_id || {}).toString() }
   }
 
   public async getOne(id: string): Promise<T> {
@@ -36,14 +37,16 @@ export class Repository<T extends BaseModel> {
     }
     const result: any = await this.db.collection(this.name).insertOne(toInsert)
     const created: T = await this.getOne(result.insertedId.toString())
-    return this.mapToModel(created)
+    return created
   }
 
   public async updateOne(data: T, where: any): Promise<any> {
+    delete data.id
     const toUpdate: T = {
       ...data,
       updatedAt: new Date(),
     }
-    return await this.db.collection(this.name).updateOne(where, { $set: toUpdate })
+    const res: any = await this.db.collection(this.name).findOneAndUpdate(where, { $set: toUpdate }, { returnNewDocument: true, upsert: false, returnOriginal: false } as FindOneAndReplaceOption)
+    return this.mapToModel(res.value)
   }
 }
