@@ -1,8 +1,8 @@
 {
   "name": "insectify-api",
   "version": "0.0.1",
-  "description": "",
-  "author": "",
+  "description": "Insectify shop API / server application.",
+  "author": "Bartosz Rak",
   "license": "MIT",
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
