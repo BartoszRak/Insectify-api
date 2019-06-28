@@ -1,4 +1,4 @@
-import { Injectable, Inject, HttpStatus, HttpException } from '@nestjs/common'
+import { Injectable, Inject, BadRequestException, InternalServerErrorException } from '@nestjs/common'
 import * as jwt from 'jsonwebtoken'
 import { ObjectID } from 'mongodb'
 
@@ -30,7 +30,7 @@ export class AuthService {
       }
     })
     if (res.length !== 0) {
-      throw new HttpException('User with that email already exists.', HttpStatus.BAD_REQUEST)
+      throw new InternalServerErrorException('User with that email already exists.')
     }
 
     try {
@@ -59,7 +59,7 @@ export class AuthService {
 
       return createdUser
     } catch(err) {
-      throw new HttpException(`Creating user went wrong. ${err.message}`, HttpStatus.GONE)
+      throw new InternalServerErrorException(`Creating user went wrong. ${err.message}`)
     }
   }
 
@@ -76,18 +76,18 @@ export class AuthService {
     })
     
     if (queryRes.length === 0) {
-      throw new HttpException('There is no user with that email assigned.', HttpStatus.BAD_REQUEST)
+      throw new BadRequestException('There is no user with that email assigned.')
     }
 
     const fetchedUser: User = { ...queryRes[0] } as User
     const { passwordHash, passwordSalt, isEmailConfirmed } = fetchedUser
     if (!isEmailConfirmed) {
-      throw new HttpException('Account has not been activated.',HttpStatus.BAD_REQUEST)
+      throw new InternalServerErrorException('Account has not been activated.')
     }
 
     const isPasswordValid: boolean = await checkPasswordAsync(password, passwordSalt, passwordHash)
     if (!isPasswordValid) {
-      throw new HttpException('Password or email is invalid', HttpStatus.GONE)
+      throw new InternalServerErrorException('Password or email is invalid')
     }
   
     const expireTime: number = 3600
@@ -118,16 +118,16 @@ export class AuthService {
     })
 
     if (queryRes.length === 0) {
-      throw new HttpException('Activation failed. There is no user with that email assigned.', HttpStatus.BAD_REQUEST)
+      throw new BadRequestException('Activation failed. There is no user with that email assigned.')
     }
     const user: User = { ...queryRes[0] } as User
     const { activationSalt, isEmailConfirmed } = user
     if (isEmailConfirmed) {
-      throw new HttpException('Account is already active.', HttpStatus.BAD_REQUEST)
+      throw new InternalServerErrorException('Account is already active.')
     }
     const isTokenValid: boolean = await checkPasswordAsync(email, activationSalt, activationToken)
     if(!isTokenValid) {
-      throw new HttpException('Activation token is invalid or outdated.', HttpStatus.BAD_REQUEST)
+      throw new InternalServerErrorException('Activation token is invalid or outdated.')
     }
     try {
       const activatedUser: User = await this.storage.users.updateOne({
@@ -139,7 +139,7 @@ export class AuthService {
       })
       return activatedUser
     } catch(err) {
-      throw new HttpException('Activation process failed.', HttpStatus.GONE)
+      throw new InternalServerErrorException('Activation process failed.')
     }
   }
 
@@ -149,7 +149,7 @@ export class AuthService {
       const user: User = await this.activation.requestActivation(email)
       return user
     } catch(err) {
-      throw new HttpException('Requesting new activation process failed.', HttpStatus.GONE)
+      throw new InternalServerErrorException('Requesting new activation process failed.')
     }
   }
 }
