@@ -1,18 +1,18 @@
 import * as admin from 'firebase-admin'
 
-import { ConfigService } from '../config/config.service'
-import * as serviceAccountJson from './service-account.json'
+import { firebaseConfig } from '../../config'
+import * as serviceAccountJson from './service-account-dev.json'
+
 const serviceAccount: any = { ...serviceAccountJson }
 export const firebaseProviders = [
   {
     provide: 'FirebaseApp',
-    useFactory: (config: ConfigService): admin.app.App => {
+    useFactory: (): admin.app.App => {
       return admin.initializeApp({
         credential: admin.credential.cert(serviceAccount),
-        databaseURL: config.get('FIREBASE_DATABASE_URL'),
+        databaseURL: firebaseConfig.databaseURL,
       }, 'insectify-api-dev')
     },
-    inject: ['ConfigService'],
   }, {
     provide: 'Firestore',
     useFactory: (app: admin.app.App): admin.firestore.Firestore => {

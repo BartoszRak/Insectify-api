@@ -50,9 +50,21 @@ export abstract class IMutation {
 }
 
 export abstract class IQuery {
+    abstract getRoles(): Role[] | Promise<Role[]>;
+
     abstract userById(id: string): User | Promise<User>;
 
     abstract users(limit?: number, where?: undefined[]): User[] | Promise<User[]>;
+}
+
+export class Role {
+    id: string;
+    name: string;
+    permissions: string[];
+}
+
+export class Session {
+    user?: User;
 }
 
 export class User {

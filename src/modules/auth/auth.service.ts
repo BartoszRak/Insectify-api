@@ -6,9 +6,8 @@ import { NotificationsService } from './notifications.service'
 import { ActivationService } from './activation.service'
 import { StorageService } from '../storage/storage.service'
 import { hashPasswordAsync, checkPasswordAsync } from '../../common/helpers/PasswordHelper'
-import { User, AuthorizationToken } from '../../graphql.schema'
+import { User, AuthorizationToken, Session } from '../../graphql.schema'
 import { RegisterUserDto, LoginUserDto, ActivationDto, RequestActivationDto } from './dto'
-import { SessionModel } from './models/session.model'
 import { jwtSecret } from '../../config'
 
 @Injectable()
@@ -79,7 +78,7 @@ export class AuthService {
       throw new BadRequestException('There is no user with that email assigned.')
     }
 
-    const fetchedUser: User = { ...queryRes[0] } as User
+    const fetchedUser: User = { ...queryRes[0] }
     const { passwordHash, passwordSalt, isEmailConfirmed } = fetchedUser
     if (!isEmailConfirmed) {
       throw new InternalServerErrorException('Account has not been activated.')
@@ -91,7 +90,9 @@ export class AuthService {
     }
   
     const expireTime: number = 3600
-    const session: any = new SessionModel({ ...user })
+    const session: Session = {
+      user: fetchedUser,
+    }
     const token: string = await jwt.sign({
       data: session,
     }, jwtSecret, {

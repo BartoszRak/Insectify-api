@@ -1,9 +1,6 @@
 import { Controller, Injectable, Inject, Post, Body } from '@nestjs/common'
 
-import { NotificationsService } from './notifications.service'
-import { ActivationService } from './activation.service'
 import { AuthService } from './auth.service'
-import { StorageService } from '../storage/storage.service'
 import { RegisterUserDto, LoginUserDto, ActivationDto, RequestActivationDto } from './dto'
 import { User } from '../../graphql.schema'
 import { AuthorizationToken } from '../../graphql.schema'
@@ -12,9 +9,6 @@ import { AuthorizationToken } from '../../graphql.schema'
 @Controller('auth')
 export class AuthController {
   constructor(
-    @Inject('NotificationsService') private readonly notification: NotificationsService,
-    @Inject('ActivationService') private readonly activation: ActivationService,
-    @Inject('StorageService') private readonly storage: StorageService,
     @Inject('AuthService') private readonly auth: AuthService,
   ) {}
 

@@ -14,6 +14,11 @@ export class Repository<T extends BaseModel> {
     return { ...obj, id: (_id || {}).toString() }
   }
 
+  public async onChange(callback: any): Promise<void> {
+    const changeStream = this.db.collection(this.name).watch()
+    changeStream.on('change', callback)
+  }
+
   public async getOne(id: string): Promise<T> {
     if (!ObjectID.isValid(id)) return null
     const query: { [key: string]: any } = {}
@@ -29,6 +34,11 @@ export class Repository<T extends BaseModel> {
     return results.map((res: any) => this.mapToModel(res))
   }
 
+  public async getAll(): Promise<T[]> {
+    const results: any[] = await this.db.collection(this.name).find().toArray()
+    return results.map((res: any) => this.mapToModel(res))
+  }
+ 
   public async insertOne(data: T): Promise<T> {
     const toInsert: T = {
       ...data,
