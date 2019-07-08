@@ -6,13 +6,12 @@ import { NotificationsService } from './notifications.service'
 import { ActivationService } from './activation.service'
 import { AuthService } from './auth.service'
 
-import { FirebaseModule } from '../firebase/firebase.module'
 import { MailerModule } from '../mailer/mailer.module'
 import { StorageModule } from '../storage/storage.module'
 import { AuthResolvers } from './auth.resolvers'
 
 @Module({
-  imports: [FirebaseModule, MailerModule, StorageModule, ScheduleModule.register()],
+  imports: [MailerModule, StorageModule, ScheduleModule.register()],
   controllers: [AuthController],
   providers: [NotificationsService, ActivationService, AuthService, AuthResolvers],
   exports: [],

@@ -5,7 +5,6 @@ import { join } from 'path'
 import * as jwt from 'jsonwebtoken'
 
 import { AppController } from './app.controller'
-import { AppService } from './app.service'
 import { StorageModule } from './modules/storage/storage.module'
 import { AuthModule } from './modules/auth/auth.module'
 import { RolesModule } from './modules/roles/roles.module'
@@ -77,7 +76,7 @@ import { appProviders } from './app.providers'
     }),
   ],
   controllers: [AppController],
-  providers: [AppService, ...appProviders],
+  providers: [...appProviders],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

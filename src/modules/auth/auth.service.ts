@@ -22,11 +22,9 @@ export class AuthService {
     const { email, password, firstName, lastName, postCode, city, region, country, houseNumber, flatNumber, street } = user
     const res: User[] = await this.storage.users.getList({
       limit: 1,
-      where: {
-        email: {
-          $eq: email,
-        },
-      }
+      where: [
+        { field: 'email', by: '==', value: email }
+      ]
     })
     if (res.length !== 0) {
       throw new InternalServerErrorException('User with that email already exists.')
@@ -67,11 +65,9 @@ export class AuthService {
 
     const queryRes = await this.storage.users.getList({
       limit: 1,
-      where: {
-        email: {
-          $eq: email,
-        },
-      },
+      where: [
+        { field: 'email', by: '==', value: email },
+      ]
     })
     
     if (queryRes.length === 0) {
@@ -111,11 +107,9 @@ export class AuthService {
 
     const queryRes: any = await this.storage.users.getList({
       limit: 1,
-      where: {
-        email: {
-          $eq: 'rak.bartosz98@gmail.com',
-        },
-      },
+      where: [
+        { field: 'email', by: '==', value: email }
+      ]
     })
 
     if (queryRes.length === 0) {
@@ -135,8 +129,6 @@ export class AuthService {
         ...user,
         isEmailConfirmed: true,
         activationSalt: null,
-      }, {
-        _id: new ObjectID(user.id),
       })
       return activatedUser
     } catch(err) {

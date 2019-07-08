@@ -25,7 +25,7 @@ export class UsersResolvers {
     @Args('limit')
     limit: number,
     @Args('where')
-    where: { [key: string]: string[] },
+    where: any[],
   ): Promise<User[]> {
     const result: User[] = await this.storage.users.getList({
       limit,

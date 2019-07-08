@@ -1,7 +1,5 @@
 import { Injectable, Inject } from '@nestjs/common'
-import * as admin from 'firebase-admin'
 import { InjectSchedule, Schedule } from 'nest-schedule'
-import { ObjectID } from 'mongodb'
 
 import { NotificationsService } from './notifications.service'
 import { StorageService } from '../storage/storage.service'
@@ -12,7 +10,6 @@ import { User } from '../../graphql.schema'
 Injectable()
 export class ActivationService {
   constructor(
-    @Inject('Firestore') private fs: admin.firestore.Firestore,
     @Inject('StorageService') private readonly storage: StorageService,
     @Inject('NotificationsService') private notification: NotificationsService,
     @InjectSchedule() private readonly schedule: Schedule,
@@ -23,11 +20,9 @@ export class ActivationService {
       const { hash: activationToken, salt: activationSalt }: { hash: string, salt: string } = await hashPasswordAsync(email)
       const query: User[] = await this.storage.users.getList({
         limit: 1,
-        where: {
-          email: {
-            $eq: email,
-          },
-        }
+        where: [
+          { field: 'email', by: '==', value: email },
+        ]
       })
 
       if (query.length === 0) {
@@ -42,8 +37,6 @@ export class ActivationService {
       const activatedUser: User = await this.storage.users.updateOne({
         ...user,
         activationSalt,
-      }, {
-        _id: new ObjectID(user.id),
       })
       await this.notification.sendActivationEmail(user.email, activationToken)
       return activatedUser

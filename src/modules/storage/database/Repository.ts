@@ -14,11 +14,6 @@ export class Repository<T extends BaseModel> {
     return { ...obj, id: (_id || {}).toString() }
   }
 
-  public async onChange(callback: any): Promise<void> {
-    const changeStream = this.db.collection(this.name).watch()
-    changeStream.on('change', callback)
-  }
-
   public async getOne(id: string): Promise<T> {
     if (!ObjectID.isValid(id)) return null
     const query: { [key: string]: any } = {}

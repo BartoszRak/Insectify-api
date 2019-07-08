@@ -34,6 +34,12 @@ export class RequestActivationInput {
     email?: string;
 }
 
+export class WhereStatement {
+    field?: string;
+    by?: string;
+    value?: string;
+}
+
 export class AuthorizationToken {
     token?: string;
     expireTime?: number;
@@ -54,7 +60,7 @@ export abstract class IQuery {
 
     abstract userById(id: string): User | Promise<User>;
 
-    abstract users(limit?: number, where?: undefined[]): User[] | Promise<User[]>;
+    abstract users(limit?: number, where?: WhereStatement[]): User[] | Promise<User[]>;
 }
 
 export class Role {
