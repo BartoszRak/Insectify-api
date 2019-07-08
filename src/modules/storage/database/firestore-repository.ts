@@ -17,6 +17,12 @@ export class FirestoreRepository<T extends BaseModel> {
     }
   }
 
+  public onChange(callback: any): any {
+    return this.fs.collection(this.name).onSnapshot((snapshot: admin.firestore.QuerySnapshot) => {
+      callback(snapshot.docs.map((doc: any) => this.mapToModel(doc)))
+    })
+  }
+
   public async getOne(id: string): Promise<T> {
     if (!id) return null
     const result: any = await this.fs.collection(this.name).doc(id).get()

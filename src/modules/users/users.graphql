@@ -20,7 +20,7 @@ type User {
   lastName: String
   phoneNumber: String
   adress: UserAdress
-  roles: [String]
+  roles: JSONObject
 }
 
 type UserAdress { 

@@ -66,7 +66,7 @@ export abstract class IQuery {
 export class Role {
     id: string;
     name: string;
-    permissions: string[];
+    permissions: JSONObject;
 }
 
 export class Session {
@@ -84,7 +84,7 @@ export class User {
     lastName?: string;
     phoneNumber?: string;
     adress?: UserAdress;
-    roles?: string[];
+    roles?: JSONObject;
 }
 
 export class UserAdress {
@@ -98,3 +98,5 @@ export class UserAdress {
 }
 
 export type Date = any;
+export type JSON = any;
+export type JSONObject = any;

@@ -5,5 +5,5 @@ type Query {
 type Role {
   id: ID!
   name: String!
-  permissions: [String]!
+  permissions: JSONObject!
 }

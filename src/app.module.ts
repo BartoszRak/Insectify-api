@@ -3,13 +3,14 @@ import { GraphQLModule } from '@nestjs/graphql'
 import { get, mapKeys } from 'lodash'
 import { join } from 'path'
 import * as jwt from 'jsonwebtoken'
+import { GraphQLJSON, GraphQLJSONObject } from 'graphql-type-json'
 
 import { AppController } from './app.controller'
 import { StorageModule } from './modules/storage/storage.module'
 import { AuthModule } from './modules/auth/auth.module'
 import { RolesModule } from './modules/roles/roles.module'
 import { LoggerMiddleware } from './middleware/logger.middleware'
-import { DateResolver } from './common/scalar-types/date.scalar'
+
 import { jwtSecret } from './config'
 import { UsersModule } from './modules/users/users.module'
 import { appProviders } from './app.providers'
@@ -24,7 +25,10 @@ import { appProviders } from './app.providers'
       typePaths: ['./**/*.graphql'],
       introspection: true,
       playground: true,
-      resolvers: {}, //{ Date: DateResolver },
+      resolvers: {
+        JSON: GraphQLJSON,
+        JSONObject: GraphQLJSONObject,
+      }, //{ Date: DateResolver },
       installSubscriptionHandlers: true,
       definitions: {
         path: join(process.cwd(), 'src/graphql.schema.ts'),
