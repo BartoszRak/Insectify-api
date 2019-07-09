@@ -1,4 +1,5 @@
-import { Controller, Injectable, Inject, Get } from '@nestjs/common'
+import { Req, Controller, Injectable, Inject, Get } from '@nestjs/common'
+import * as Express from 'express'
 
 import { Role } from '../../graphql.schema'
 import { RolesService } from './roles.service'
@@ -11,9 +12,10 @@ export class RolesController {
     @Inject('RolesService') private readonly roles: RolesService,
   ) {}
 
-  @Permissions(['roles.get'])
+  @Permissions(['roles.getAll'])
   @Get()
-  public async register(): Promise<Role[]> {
-    return this.roles.getAllRoles()
+  public async register(@Req() req: Express.Request): Promise<Role[]> {
+    console.log('===> controller', req)
+    return this.roles.getAllRoles(req)
   }
 }
