@@ -1,9 +1,6 @@
 import * as admin from 'firebase-admin'
 
-import { firebaseConfig } from '../../../config'
-import * as serviceAccountJson from './service-account-dev.json'
-
-const serviceAccount: any = { ...serviceAccountJson }
+import { firebaseConfig, serviceAccount } from '../../../config'
 
 export class FirestoreClient{
   private fs: admin.firestore.Firestore
