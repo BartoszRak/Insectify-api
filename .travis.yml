@@ -1,26 +1,5 @@
-language: node_js
+sudo: required
 services:
-  - docker
-node_js:
-- stable
-cache:
-  yarn: true
-  directories:
-  - node_modules
-branches:
-  only:
-  - dev
-before_install:
-  - yarn global add firebase-tools
-install:
-  - yarn
-script:
-  - yarn build
-#deploy:
-#  - provider: firebase
-#    skip_cleanup: true
-#    token: $FIREBASE_API_KEY_DEV
-#    project: dev
-#    on:
-#      all_branches: true
-#      condition: $TRAVIS_BRANCH = dev
+  -docker
+os:
+  - linux
