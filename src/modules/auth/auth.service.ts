@@ -1,6 +1,5 @@
 import { Injectable, Inject, BadRequestException, InternalServerErrorException } from '@nestjs/common'
 import * as jwt from 'jsonwebtoken'
-import { ObjectID } from 'mongodb'
 
 import { NotificationsService } from './notifications.service'
 import { ActivationService } from './activation.service'
