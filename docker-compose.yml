@@ -25,17 +25,3 @@ services:
       - "./yarn.lock:/app/yarn.lock"
     ports:
       - 3000:3000
-  # mongo
-  mongodb:
-    image: mongo:latest
-    container_name: "mongodb"
-    networks: 
-      - "insectify-api"
-    environment:
-      - MONGO_DATA_DIR=/data/db
-      - MONGO_LOG_DIR=/dev/null
-    volumes:
-      - ./data/db:/data/db
-    ports:
-        - 27017:27017
-    command: mongod --smallfiles --logpath=/dev/null
