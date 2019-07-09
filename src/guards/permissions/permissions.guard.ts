@@ -1,7 +1,6 @@
 import { Injectable, Inject, CanActivate, ExecutionContext, UnauthorizedException } from '@nestjs/common'
 import { Reflector } from '@nestjs/core'
 import { GqlExecutionContext, GraphQLExecutionContext } from '@nestjs/graphql'
-import { Express } from 'express'
 import * as jwt from 'jsonwebtoken'
 import * as memoize from 'memoizee'
 
@@ -19,7 +18,7 @@ export class PermissionsGuard implements CanActivate {
     this.init()
   }
 
-  private roles: Role[]
+  private roles: Role[] = []
 
   private async init() {
     try {
@@ -44,7 +43,7 @@ export class PermissionsGuard implements CanActivate {
 
   private createInfinityProxy() {
     return new Proxy({}, {
-      get: () =>this.createInfinityProxy()
+      get: () => this.createInfinityProxy()
     })
   }
 
@@ -105,26 +104,33 @@ export class PermissionsGuard implements CanActivate {
   public async canActivate(
     ctx: ExecutionContext,
   ): Promise<boolean> {
-    const graphqlCtx: GraphQLExecutionContext = GqlExecutionContext.create(ctx)
-    const request: any = ctx.switchToHttp().getRequest() || graphqlCtx.getContext()
-    const requiredPermissions: string[] = this.reflector.get<string[]>('requiredPermissions', ctx.getHandler())
-    if (!Boolean(requiredPermissions)) {
-      return true
-    }
-    const header: any = request.headers
-    if (!header.authorization) {
-      return false
-    }
-    const token: string = header.authorization.slice(7)
-    const decodedToken: any = await jwt.verify(token, jwtSecret)
-    const user: User = decodedToken.data.user
-    const userPermissions: string[] = this.getUserPermissions(user)
-    const userPermissionsObj: any = this.mapPermissionsArrayToObject(userPermissions)
-  
-    if (!this.hasAccess(requiredPermissions, userPermissionsObj)) {
-      throw new UnauthorizedException('You are missing some permissions to access this resource.')
-    }
+    try {
+      const graphqlCtx: GraphQLExecutionContext = GqlExecutionContext.create(ctx)
+      const request: any = ctx.switchToHttp().getRequest() || graphqlCtx.getContext()
+      const requiredPermissions: string[] = this.reflector.get<string[]>('requiredPermissions', ctx.getHandler())
+      if (!Boolean(requiredPermissions)) {
+        return true
+      }
+      const header: any = request.headers
+      if (!header.authorization) {
+        return false
+      }
+      const token: string = header.authorization.slice(7)
+      const decodedToken: any = await jwt.verify(token, jwtSecret)
+      const user: User = decodedToken.data.user
+      const userPermissions: string[] = this.getUserPermissions(user)
+      const userPermissionsObj: any = this.mapPermissionsArrayToObject(userPermissions)
+    
+      if (!this.hasAccess(requiredPermissions, userPermissionsObj)) {
+        throw new UnauthorizedException('You are missing some permissions to access this resource.')
+      }
 
-    return true
+      request.permissions = userPermissionsObj
+      request.user = user
+
+      return true
+    } catch (err) {
+      throw new UnauthorizedException(err.message)
+    }
   }
 }

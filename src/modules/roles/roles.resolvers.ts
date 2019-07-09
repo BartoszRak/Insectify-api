@@ -1,5 +1,6 @@
 import { Inject } from '@nestjs/common'
-import { Resolver, Query } from '@nestjs/graphql'
+import { Resolver, Query, Context } from '@nestjs/graphql'
+import * as Express from 'express'
 
 import { RolesService } from './roles.service'
 import { Permissions } from '../../decorators'
@@ -11,10 +12,9 @@ export class RolesResolvers {
     @Inject('RolesService') private readonly roles: RolesService,
   ) {}
 
-  @Permissions(['roles.get'])
+  @Permissions(['roles.getAll'])
   @Query('getRoles')
-  public async getRoles(): Promise<Role[]> {
-    const roles: Role[] = await this.roles.getAllRoles()
-    return roles
+  public async getRoles(@Context() ctx): Promise<Role[]> {
+    return this.roles.getAllRoles(ctx)
   }
 }

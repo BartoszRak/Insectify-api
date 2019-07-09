@@ -16,8 +16,7 @@ export class UsersResolvers {
     @Args('id')
     id: string,
   ): Promise<User> {
-    const result: User = await this.storage.users.getOne(id)
-    return result
+    return this.storage.users.getOne(id)
   }
 
   @Query()
@@ -27,11 +26,10 @@ export class UsersResolvers {
     @Args('where')
     where: any[],
   ): Promise<User[]> {
-    const result: User[] = await this.storage.users.getList({
+    return this.storage.users.getList({
       limit,
       where,
     })
-    return result
   }
 
 }

@@ -1,5 +1,5 @@
 import { Inject } from '@nestjs/common'
-import { Mutation, Args, Query, Resolver } from '@nestjs/graphql'
+import { Mutation, Args, Resolver } from '@nestjs/graphql'
 
 import { RegisterUserDto, LoginUserDto, ActivationDto, RequestActivationDto } from './dto'
 import { AuthService } from './auth.service'
@@ -15,31 +15,27 @@ export class AuthResolvers {
   async register(
     @Args('registerInput') args: RegisterUserDto,
   ): Promise<User> {
-    const user: User = await this.auth.register(args)
-    return user
+    return this.auth.register(args)
   }
 
   @Mutation('login')
   async login(
     @Args('loginInput') args: LoginUserDto,
   ): Promise<AuthorizationToken> {
-    const authorization: AuthorizationToken = await this.auth.login(args)
-    return authorization
+    return this.auth.login(args)
   }
 
   @Mutation('activate')
   async activate(
     @Args('activationInput') args: ActivationDto,
   ): Promise<User> {
-    const activatedUser: User = await this.auth.activate(args)
-    return activatedUser
+    return this.auth.activate(args)
   }
 
   @Mutation('requestActivation')
   async requestActivation(
     @Args('requestActivationInput') args: RequestActivationDto,
   ): Promise<User> {
-    const requestActivationUser: User = await this.auth.requestActivation(args)
-    return requestActivationUser
+    return this.auth.requestActivation(args)
   }
 }
