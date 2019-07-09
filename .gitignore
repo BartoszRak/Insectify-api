@@ -1,6 +1,6 @@
 # custom
 *.env
-*service-account.json
+**/service-account-*.json
 data
 src/config.ts
 

@@ -23,7 +23,6 @@ services:
       - "./tslint.json:/app/tslint.json"
       - "./package.json:/app/package.json"
       - "./yarn.lock:/app/yarn.lock"
-      - "./secrets.env:/app/secrets.env"
     ports:
       - 3000:3000
   # mongo
