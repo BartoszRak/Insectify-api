@@ -1,12 +1,12 @@
-import { ConfigService } from '../config/config.service'
 import { MailerService } from './mailer.service'
+import { nodemailerCredentials } from '../../config'
 
 export const mailerProviders = [
   {
     provide: 'MainMailer',
-    useFactory: (config: ConfigService): MailerService => {
-      const nodemailerEmail = config.get('NODEMAILER_EMAIL')
-      const nodemailerPassword = config.get('NODEMAILER_PASSWORD')
+    useFactory: (): MailerService => {
+      const nodemailerEmail = nodemailerCredentials.email
+      const nodemailerPassword = nodemailerCredentials.password
       return new MailerService({
         host: 'smtp.gmail.com',
         service: 'gmail',
@@ -21,6 +21,5 @@ export const mailerProviders = [
         }
       })
     },
-    inject: ['ConfigService']
   }
 ]

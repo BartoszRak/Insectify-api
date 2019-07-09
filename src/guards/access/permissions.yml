@@ -1,6 +1,0 @@
-admin:
-  - auth.*
-user:
-  - auth.isAuth
-  - auth.isAuth
-  - auth.*

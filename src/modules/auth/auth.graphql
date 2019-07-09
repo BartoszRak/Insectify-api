@@ -5,6 +5,10 @@ type Mutation {
   requestActivation(requestActivationInput: RequestActivationInput): User
 }
 
+type Session {
+  user: User
+}
+
 type AuthorizationToken { 
   token: String
   expireTime: Int

@@ -29,6 +29,11 @@ export class Repository<T extends BaseModel> {
     return results.map((res: any) => this.mapToModel(res))
   }
 
+  public async getAll(): Promise<T[]> {
+    const results: any[] = await this.db.collection(this.name).find().toArray()
+    return results.map((res: any) => this.mapToModel(res))
+  }
+ 
   public async insertOne(data: T): Promise<T> {
     const toInsert: T = {
       ...data,

@@ -6,9 +6,8 @@ import { NotificationsService } from './notifications.service'
 import { ActivationService } from './activation.service'
 import { StorageService } from '../storage/storage.service'
 import { hashPasswordAsync, checkPasswordAsync } from '../../common/helpers/PasswordHelper'
-import { User, AuthorizationToken } from '../../graphql.schema'
+import { User, AuthorizationToken, Session } from '../../graphql.schema'
 import { RegisterUserDto, LoginUserDto, ActivationDto, RequestActivationDto } from './dto'
-import { SessionModel } from './models/session.model'
 import { jwtSecret } from '../../config'
 
 @Injectable()
@@ -23,11 +22,9 @@ export class AuthService {
     const { email, password, firstName, lastName, postCode, city, region, country, houseNumber, flatNumber, street } = user
     const res: User[] = await this.storage.users.getList({
       limit: 1,
-      where: {
-        email: {
-          $eq: email,
-        },
-      }
+      where: [
+        { field: 'email', by: '==', value: email }
+      ]
     })
     if (res.length !== 0) {
       throw new InternalServerErrorException('User with that email already exists.')
@@ -68,18 +65,16 @@ export class AuthService {
 
     const queryRes = await this.storage.users.getList({
       limit: 1,
-      where: {
-        email: {
-          $eq: email,
-        },
-      },
+      where: [
+        { field: 'email', by: '==', value: email },
+      ]
     })
     
     if (queryRes.length === 0) {
       throw new BadRequestException('There is no user with that email assigned.')
     }
 
-    const fetchedUser: User = { ...queryRes[0] } as User
+    const fetchedUser: User = { ...queryRes[0] }
     const { passwordHash, passwordSalt, isEmailConfirmed } = fetchedUser
     if (!isEmailConfirmed) {
       throw new InternalServerErrorException('Account has not been activated.')
@@ -91,7 +86,9 @@ export class AuthService {
     }
   
     const expireTime: number = 3600
-    const session: any = new SessionModel({ ...user })
+    const session: Session = {
+      user: fetchedUser,
+    }
     const token: string = await jwt.sign({
       data: session,
     }, jwtSecret, {
@@ -110,11 +107,9 @@ export class AuthService {
 
     const queryRes: any = await this.storage.users.getList({
       limit: 1,
-      where: {
-        email: {
-          $eq: 'rak.bartosz98@gmail.com',
-        },
-      },
+      where: [
+        { field: 'email', by: '==', value: email }
+      ]
     })
 
     if (queryRes.length === 0) {
@@ -134,8 +129,6 @@ export class AuthService {
         ...user,
         isEmailConfirmed: true,
         activationSalt: null,
-      }, {
-        _id: new ObjectID(user.id),
       })
       return activatedUser
     } catch(err) {

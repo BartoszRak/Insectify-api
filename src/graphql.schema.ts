@@ -34,6 +34,12 @@ export class RequestActivationInput {
     email?: string;
 }
 
+export class WhereStatement {
+    field?: string;
+    by?: string;
+    value?: string;
+}
+
 export class AuthorizationToken {
     token?: string;
     expireTime?: number;
@@ -50,9 +56,21 @@ export abstract class IMutation {
 }
 
 export abstract class IQuery {
+    abstract getRoles(): Role[] | Promise<Role[]>;
+
     abstract userById(id: string): User | Promise<User>;
 
-    abstract users(limit?: number, where?: undefined[]): User[] | Promise<User[]>;
+    abstract users(limit?: number, where?: WhereStatement[]): User[] | Promise<User[]>;
+}
+
+export class Role {
+    id: string;
+    name: string;
+    permissions: JSONObject;
+}
+
+export class Session {
+    user?: User;
 }
 
 export class User {
@@ -66,7 +84,7 @@ export class User {
     lastName?: string;
     phoneNumber?: string;
     adress?: UserAdress;
-    roles?: string[];
+    roles?: JSONObject;
 }
 
 export class UserAdress {
@@ -80,3 +98,5 @@ export class UserAdress {
 }
 
 export type Date = any;
+export type JSON = any;
+export type JSONObject = any;

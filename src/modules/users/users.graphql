@@ -1,6 +1,12 @@
 type Query {
   userById(id: ID!): User
-  users(limit: Int, where: [[String]]): [User]
+  users(limit: Int, where: [WhereStatement]): [User]
+}
+
+input WhereStatement {
+  field: String
+  by: String
+  value: String
 }
 
 type User {
@@ -14,7 +20,7 @@ type User {
   lastName: String
   phoneNumber: String
   adress: UserAdress
-  roles: [String]
+  roles: JSONObject
 }
 
 type UserAdress { 

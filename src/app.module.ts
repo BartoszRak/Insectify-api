@@ -3,28 +3,32 @@ import { GraphQLModule } from '@nestjs/graphql'
 import { get, mapKeys } from 'lodash'
 import { join } from 'path'
 import * as jwt from 'jsonwebtoken'
+import { GraphQLJSON, GraphQLJSONObject } from 'graphql-type-json'
 
 import { AppController } from './app.controller'
-import { AppService } from './app.service'
 import { StorageModule } from './modules/storage/storage.module'
-import { ConfigModule } from './modules/config/config.module'
 import { AuthModule } from './modules/auth/auth.module'
+import { RolesModule } from './modules/roles/roles.module'
 import { LoggerMiddleware } from './middleware/logger.middleware'
-import { DateResolver } from './common/scalar-types/date.scalar'
+
 import { jwtSecret } from './config'
 import { UsersModule } from './modules/users/users.module'
+import { appProviders } from './app.providers'
 
 @Module({
   imports: [
-    ConfigModule,
     AuthModule,
+    RolesModule,
     StorageModule,
     UsersModule,
     GraphQLModule.forRoot({
       typePaths: ['./**/*.graphql'],
       introspection: true,
       playground: true,
-      resolvers: {}, //{ Date: DateResolver },
+      resolvers: {
+        JSON: GraphQLJSON,
+        JSONObject: GraphQLJSONObject,
+      }, //{ Date: DateResolver },
       installSubscriptionHandlers: true,
       definitions: {
         path: join(process.cwd(), 'src/graphql.schema.ts'),
@@ -35,7 +39,8 @@ import { UsersModule } from './modules/users/users.module'
         return error
       },
       context: ({ req, res, connection }) => {
-
+        return req
+        /*console.log('###', req.headers)
         let session
         let request
         if (req) {
@@ -55,7 +60,7 @@ import { UsersModule } from './modules/users/users.module'
         return {
           request,
           session,
-        };
+        };*/
       },
       subscriptions: {
         onConnect: (connectionParams, websocket, context) => {
@@ -75,7 +80,7 @@ import { UsersModule } from './modules/users/users.module'
     }),
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [...appProviders],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

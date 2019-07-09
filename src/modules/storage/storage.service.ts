@@ -2,8 +2,9 @@ import { Injectable, Inject } from '@nestjs/common'
 
 import { BaseStorage } from './database/base-storage'
 import { Repository } from './database/repository'
+import { FirestoreRepository } from './database/firestore-repository'
 
-import { User } from '../../graphql.schema'
+import { User, Role } from '../../graphql.schema'
 
 @Injectable()
 export class StorageService extends BaseStorage {
@@ -13,13 +14,16 @@ export class StorageService extends BaseStorage {
     this.initStorage()
   }
 
-  public users: Repository<User>
+  public users: FirestoreRepository<User>
+  public roles: FirestoreRepository<Role>
 
   private async initStorage(): Promise<void> {
     await this.connect()
     console.log('[Storage] Connected.')
 
-    this.users = new Repository<User>(this.db, 'users')
+    this.users = new FirestoreRepository<User>(this.fs, 'users')
+    this.roles = new FirestoreRepository<Role>(this.fs, 'roles')
+  
     console.log('[Storage] Repositories initialized.')
   }
 }
